@@ -40,9 +40,9 @@ public:
 	}
 
 	virtual void voice() = 0; 
-	// чистый виртуальный метод С++
-	// абстрактный метод Java
-	// класс Pet теперь абстрактный класс
+	// Г·ГЁГ±ГІГ»Г© ГўГЁГ°ГІГіГ Г«ГјГ­Г»Г© Г¬ГҐГІГ®Г¤ Г‘++
+	// Г ГЎГ±ГІГ°Г ГЄГІГ­Г»Г© Г¬ГҐГІГ®Г¤ Java
+	// ГЄГ«Г Г±Г± Pet ГІГҐГЇГҐГ°Гј Г ГЎГ±ГІГ°Г ГЄГІГ­Г»Г© ГЄГ«Г Г±Г±
 	virtual void info() = 0;
 	virtual ~Pet() {}
 };
@@ -92,7 +92,7 @@ int main()
 	Pet** pets = NULL; 
 	int size = 5;
 	pets = new Pet* [size];
-	// Pet* pet1 = new Pet(); - невозможно создать объект абстрактного класса
+	// Pet* pet1 = new Pet(); - Г­ГҐГўГ®Г§Г¬Г®Г¦Г­Г® Г±Г®Г§Г¤Г ГІГј Г®ГЎГєГҐГЄГІ Г ГЎГ±ГІГ°Г ГЄГІГ­Г®ГЈГ® ГЄГ«Г Г±Г±Г 
 
 	pets[0] = new Cat("Alesha", 1);
 	pets[1] = new Dog("Petya", 2);
@@ -112,6 +112,7 @@ int main()
 		delete pets[i];
 	}
 	delete[] pets;
+	pets = NULL;
 	system("pause");
 	return 0;
 }
