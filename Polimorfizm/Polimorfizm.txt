@@ -1,0 +1,214 @@
+#include <iostream>
+#include <Windows.h>
+#include <string>
+
+using namespace std;
+
+class A
+{
+public:
+	virtual void info() // включает механизм позднего связывания
+	{
+		cout << "Object class A\n";
+	}
+	virtual ~A()
+	{
+		cout << "Destructor A\n";
+	}
+};
+
+class B : public A
+{
+public:
+	void info()
+	{
+		cout << "Object class B\n";
+	}
+
+	void info1()
+	{
+		cout << "Object class B 11111";
+	}
+	~B()
+	{
+		cout << "Destructor B\n";
+	}
+};
+
+class C : public B
+{
+public:
+	void info()
+	{
+		cout << "Object class C\n";
+	}
+	~C()
+	{
+		cout << "Destructor C\n";
+	}
+};
+int main()
+{
+
+	A* a1 = new A();
+	B* b1 = new B();
+	C* c1 = new C();
+
+	a1->info();
+	b1->info();
+	b1->info1();
+	c1->info();
+
+	cout << "-------------------\n";
+
+	A* base = NULL;
+	
+	// b1 = (B*)a1; 
+	// нисходящее преобразование данныХ (downcast)
+	// небезопасный, нужно быть уверенным в соответствении типов
+	base = a1; // A* = A*
+	base->info();
+	delete base;
+	cout << "-------------------\n";
+	base = b1; // A* = (A*)B* - неявное преобразование
+	base->info();
+	delete base;
+	cout << "-------------------\n";
+	base = c1; // A* = (A*)C* - неявное преобразование
+	// восходящее преобразование данных (upcast)
+	// может работать и работает неявно; 
+	// безопасно
+	base->info();
+	delete base;
+
+	/*cout << "-------------------\n";
+	delete a1, a1=NULL;
+
+	cout << "-------------------\n";
+	delete b1, b1 = NULL;
+
+	cout << "-------------------\n";
+	delete c1, c1 = NULL;*/
+
+	
+	system("pause");
+	return 0;
+}
+
+#include <iostream>
+#include <Windows.h>
+#include <string>
+
+using namespace std;
+
+class Pet
+{
+private:
+	string nickname;
+	int age;
+public:
+
+	Pet() :nickname(""), age(0) {};
+
+	Pet(string nickname, int age)
+	{
+		this->nickname = nickname;
+		this->age = age;
+	}
+
+	void setNickname(string nickname)
+	{
+		this->nickname = nickname;
+	}
+
+	string getNickname()
+	{
+		return this->nickname;
+	}
+
+	void setAge(int age)
+	{
+		this->age = age;
+	}
+
+	int getAge()
+	{
+		return this->age;
+	}
+
+	virtual void voice() = 0; 
+	// чистый виртуальный метод С++
+	// абстрактный метод Java
+	// класс Pet теперь абстрактный класс
+	virtual void info() = 0;
+	virtual ~Pet() {}
+};
+
+class Cat : public Pet
+{
+public:
+	Cat() {};
+
+	Cat(string nickname, int age) : Pet(nickname, age) {};
+
+	void voice()
+	{
+		cout << "May May\n";
+	}
+
+	void info()
+	{
+		cout << "Nickname cat: " << getNickname() << endl
+			<< "Age: " << getAge() << endl;
+	}
+	~Cat() {}
+};
+
+class Dog : public Pet
+{
+public:
+	Dog() {};
+	Dog(string nickname, int age) : Pet(nickname, age) {};
+
+	void voice()
+	{
+		cout << "Gav Gav\n";
+	}
+
+	void info()
+	{
+		cout << "Nickname dog: " << getNickname() << endl
+			<< "Age: " << getAge() << endl;
+	}
+
+	~Dog() {}
+};
+
+int main()
+{
+	Pet** pets = NULL; 
+	int size = 5;
+	pets = new Pet* [size];
+	// Pet* pet1 = new Pet(); - невозможно создать объект абстрактного класса
+
+	pets[0] = new Cat("Alesha", 1);
+	pets[1] = new Dog("Petya", 2);
+	pets[2] = new Cat("Ivan", 3);
+	pets[3] = new Dog("Gys", 4);
+	pets[4] = new Cat("Viskas", 5);
+
+	for (int i = 0; i < size; i++)
+	{
+		cout << i << ") ";
+		pets[i]->info();
+		pets[i]->voice();
+	}
+
+	for (int i = 0; i < size; i++)
+	{
+		delete pets[i];
+	}
+	delete[] pets;
+	system("pause");
+	return 0;
+}
