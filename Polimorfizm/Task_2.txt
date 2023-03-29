@@ -1,0 +1,245 @@
+#include <iostream>
+#include <Windows.h>
+#include <string>
+#include <time.h>
+#include <stdlib.h>
+#include <vector>
+
+using namespace std;
+
+class Person {
+private:
+	// int id;
+	string name;
+	int age;
+public:
+
+	Person() {
+		// id = ++counter;
+		this->name = "";
+		this->age = 0;
+	}
+
+	Person(string name, int age) {
+		this->name = name;
+		this->age = age;
+	}
+
+	void setName(string name) {
+		this->name = name;
+	}
+
+	string getName() {
+		return this->name;
+	}
+
+	void setAge(int age) {
+		this->age = age;
+	}
+
+	int getAge() {
+		return this->age;
+	}
+
+	virtual void info() = 0;
+	virtual void greeting(Person*) = 0;
+	// метод для вызова требует объект
+	virtual int typeID() = 0;
+	virtual ~Person() {}
+};
+
+class Badman : public Person {
+public:
+	Badman() {};
+
+	Badman(string name, int age) : Person(name, age) {};
+
+	void info() {
+		cout << "Я " << getName()
+			<< ", мне " << getAge() 
+			<< " и я гопник " << endl; // typeid(Badman).name() class Badman
+	}
+
+	void greeting(Person* person) {
+		cout << getName()
+			<< ": Опа, Здорова " << person->getName() << endl;
+	}
+
+	int typeID() {
+		return 1;
+	}
+
+	~Badman() {}
+};
+
+class Happyman : public Person {
+private:
+	static int counter;
+public:
+	Happyman() { counter++; };
+	Happyman(string name, int age) : Person(name, age) { counter++; };
+
+	static int getCounter() {
+		return counter;
+	}
+
+	void info() {
+		cout << "Я " << getName()
+			<< ", мне " << getAge()
+			<< " и я оптимист " << endl;
+	}
+
+	void greeting(Person* person) {
+		cout << getName()
+			<< ": Привет " << person->getName() << endl;
+	}
+
+	int typeID() {
+		return 2;
+	}
+
+	~Happyman() { counter--; }
+};
+
+int Happyman::counter = 0;
+
+class Nerdman : public Person {
+private:
+	static int ageDiff;
+	static string phrase1;
+	static string phrase2;
+public:
+	Nerdman() {};
+	Nerdman(string name, int age) : Person(name, age) {};
+
+	void info() {
+		cout << "Я " << getName()
+			<< ", мне " << getAge()
+			<< " и я ботан " << endl;
+	}
+
+	void greeting(Person* person) {
+		string phrase = (person->getAge() - getAge() > ageDiff) ?
+			": " + phrase1 + ", " : ": " + phrase2 + ", ";
+		/*
+			string phrase = (person->getAge() - getAge() > ageDiff) ?
+				phrase1  : phrase2;
+				phrase = ": " + phrase + ", ";
+		*/
+		cout << getName() << phrase << person->getName() << endl;
+	}
+
+	void ReadBook() {
+		cout << "Я читаю книгу...." << endl;
+	}
+ 
+	int typeID() {
+		return 3;
+	}
+
+	~Nerdman() {}
+};
+
+int Nerdman::ageDiff = 5;
+string Nerdman::phrase1 = ": Приветствую вас ";
+string Nerdman::phrase2 = ": Здравствуйте ";
+
+int main() {
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+
+	vector <Person*> people;
+	people.push_back(new Badman("Валера", 20));
+	people.push_back(new Happyman("Игорь", 30));
+	people.push_back(new Nerdman("Степан", 24));
+
+	people.push_back(new Badman("Вера", 35));
+	people.push_back(new Happyman("Игнат", 48));
+	people.push_back(new Nerdman("Андрей", 30));
+
+	people.push_back(new Badman("Геша", 60));
+	people.push_back(new Happyman("Миша", 82));
+	people.push_back(new Nerdman("Олег", 13));
+
+	people.push_back(new Badman("Филя", 56));
+
+	/*people[0]->greeting(people[1]);
+	people[2]->greeting(people[1]);
+	people[2]->greeting(people[0]);*/
+
+	for (int i = 0; i < people.size(); i++) {
+		cout << "-------" << endl;
+		people[i]->info();
+		for (int j = i + 1; j < people.size(); j++) {
+			people[i]->greeting(people[j]);
+			people[j]->greeting(people[i]);
+		}
+	}
+
+	int counter = 0;
+
+	for (int i = 0; i < people.size(); i++) {
+		if (people[i]->typeID() == 1) {
+			counter++;
+		}
+	}
+	cout << "Кол-во гопников " << counter << endl;
+
+	cout << "Кол-во гопников " << Happyman::getCounter() << endl;
+
+	/*
+		typeid() принадлежности типов
+	*/
+
+	if (typeid(counter) == typeid(int))	{
+		cout << "counter имеет тип int" << endl;
+	}
+
+	cout << "List badman " << endl;
+	for (int i = 0; i < people.size(); i++) {
+		if (typeid(*people[i]) == typeid(Badman)) {
+			people[i]->info();
+		}
+	}
+
+	/*
+		if (typeid(people[i]) == typeid(Badman)) |!|
+		if (typeid(Person*) == typeid(Badman))   |!|
+
+		if (typeid(*people[i]) == typeid(Badman)) 
+		if (typeid(Badman) == typeid(Badman))   
+		Person
+		Person*
+		Badman
+		Badman*
+		
+		подмассив ботанов
+	*/
+
+	vector <Nerdman*> nerds;
+
+	for (int i = 0; i < people.size(); i++) {
+		if (typeid(*people[i]) == typeid(Nerdman)) {
+			nerds.push_back((Nerdman*)people[i]);
+		}
+	}
+
+	cout << "Ботаны читают " << endl;
+	for (int i = 0; i < nerds.size(); i++) {
+		nerds[i]->info();
+		nerds[i]->ReadBook();
+	}
+
+	cout << "----------------------" << endl;
+	for (int i = 0; i < people.size(); i++) {
+		if (typeid(*people[i]) == typeid(Nerdman)) {
+			((Nerdman*)people[i])->ReadBook();
+		}
+	}
+	for (int i = 0; i < people.size(); i++) {
+		delete people[i];
+	}
+	people.clear();
+	system("pause");
+	return 0;
+}
